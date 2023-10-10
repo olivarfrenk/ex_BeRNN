@@ -186,11 +186,11 @@ for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
     if start < 400:
-        trials_easy.iloc[start, 0] = "Display 0.1 Ctx".format(displays)
+        trials_easy.iloc[start, 0] = "Display 0.1 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_easy.iloc[start, 36] = 'noResponse'
     else:
-        trials_easy.iloc[start, 0] = "Display 0.2 Ctx".format(displays)
+        trials_easy.iloc[start, 0] = "Display 0.2 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_easy.iloc[start, 36] = 'noResponse'
     for i in range(len(trials_easy)):
@@ -355,11 +355,11 @@ for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
     if start < 400:
-        trials_normal.iloc[start, 0] = "Display 0.1 Ctx".format(displays)
+        trials_normal.iloc[start, 0] = "Display 0.1 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_normal.iloc[start, 36] = 'noResponse'
     else:
-        trials_normal.iloc[start, 0] = "Display 0.2 Ctx".format(displays)
+        trials_normal.iloc[start, 0] = "Display 0.2 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_normal.iloc[start, 36] = 'noResponse'
     for i in range(len(trials_normal)):
@@ -535,11 +535,11 @@ for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
     if start < 400:
-        trials_hard.iloc[start, 0] = "Display 0.1 Ctx".format(displays)
+        trials_hard.iloc[start, 0] = "Display 0.1 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_hard.iloc[start, 36] = 'noResponse'
     else:
-        trials_hard.iloc[start, 0] = "Display 0.2 Ctx".format(displays)
+        trials_hard.iloc[start, 0] = "Display 0.2 Ctx2".format(displays)
         # Save correct answer for very first trial of a session
         trials_hard.iloc[start, 36] = 'noResponse'
     for i in range(len(trials_hard)):
@@ -559,11 +559,7 @@ trials_hard.to_excel('WM_Ctx2_trials_simColor_simForm.xlsx')
 
 
 
-
-
-
-
-
+# todo: ?
 import random
 jo = ['EF','EF Anti', 'DM', 'DM Anti', 'RP', 'RP Anti', 'RP Ctx 1', 'RP Ctx 2', 'WM', 'WM Anti', 'WM Ctx 1', 'WM Ctx 2']
 randList = random.sample(jo, len(jo))
