@@ -8,7 +8,7 @@ os.chdir('./Working Memory')
 
 
 # ======================================================================================================================
-# todo Twin memory task
+# todo Working memory task
 # ======================================================================================================================
 # Create general stimulus pool
 AllStimuli = pd.read_excel('AllStimuli.xlsx', engine='openpyxl')

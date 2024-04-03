@@ -151,19 +151,25 @@ for displays in range(1,3):
                     diffFound = False
 
         else:
-            # Create two new stims
-            stimFound, firstStim = nonSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
-            # Save the new found trial in memory for consecutive trial
-            splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
-            splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
+            global_stimFound = False
+            while global_stimFound == False:
+                # Create two new stims
+                stimFound, firstStim = nonSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
+                splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                stimFound, secondStim = nonSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
+                splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                if splitted_firstStim_color_memory != second_c1 and splitted_secondStim_color_memory != first_c1:
+                    global_stimFound = True
+
             # colors and forms to look for w.r.t. first Stim
             [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
             [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
-
-            stimFound, secondStim = nonSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
-            # Save the new found trial in memory for consecutive trial
-            splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
-            splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
             # colors and forms to look for w.r.t. second Stim
             [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
             [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
@@ -220,7 +226,7 @@ def colorSimiliarity(color1, color2, color3, form1, form2, form3):
         stim = df_stimList.sample()
         splitted_stim_color = stim.iloc[0, 0].split('_')[0]
         splitted_stim_form = stim.iloc[0, 0].split('_')[1].split('.')[0]
-        if (splitted_stim_color == color1 or splitted_stim_color == color2 or splitted_stim_color == color3) and \
+        if (splitted_stim_color != color1 or splitted_stim_color == color2 or splitted_stim_color == color3) and \
                 splitted_stim_form != form1 and splitted_stim_form != form2 and splitted_stim_form != form3:
             stimFound = True
             return stimFound, stim
@@ -389,7 +395,7 @@ def colorAndFormSimiliarity(color1, color2, color3, form1, form2, form3):
         stim = df_stimList.sample()
         splitted_stim_color = stim.iloc[0, 0].split('_')[0]
         splitted_stim_form = stim.iloc[0, 0].split('_')[1].split('.')[0]
-        if (splitted_stim_color == color1 or splitted_stim_color == color2 or splitted_stim_color == color3) and \
+        if (splitted_stim_color != color1 or splitted_stim_color == color2 or splitted_stim_color == color3) and \
                 (splitted_stim_form == form1 or splitted_stim_form == form2 or splitted_stim_form == form3):
             stimFound = True
             return stimFound, stim
