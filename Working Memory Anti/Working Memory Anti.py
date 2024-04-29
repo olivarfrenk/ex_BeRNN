@@ -51,11 +51,15 @@ trials_easy = pd.DataFrame(index = range(800), columns = range(37))
 trials_easy_preDF = pd.DataFrame(index = range(800), columns = range(2))
 
 # Fill all rows for the first 400 and second 800 (for distributing reasons on the two circles in gorilla)
-for displays in range(1,3):
+for displays in range(1,5):
     if displays == 1:
-        rangeList = [0,400]
+        rangeList = [0,200]
+    elif displays == 2:
+        rangeList = [200,400]
+    elif displays == 3:
+        rangeList = [400,600]
     else:
-        rangeList = [400,800]
+        rangeList = [600,800]
 
     # Pull first stim
     currentStim = df_stimList.sample()
@@ -69,14 +73,18 @@ for displays in range(1,3):
     [f1, f2, f3] = formDict[splitted_currentStim_form].split('-')
 
     # Start loop trough rangelist
-    for i in range(rangeList[0],rangeList[1]):
+    for i in range(rangeList[0], rangeList[1]):
         fieldFound = False
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+            elif displays == 2:
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+            elif displays == 3:
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
             else:
-                fieldNumberList = random.sample([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
             # Check that each stimulus position is at least five fields away from each other
             if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
                 fieldFound = True
@@ -163,14 +171,18 @@ sessionSize = 40
 for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
-    if start < 400:
+    # Save correct answer for very first trial of a session
+    trials_easy.iloc[start, 36] = 'noResponse'
+    # Give 3 seconds preperation time for first trial
+    trials_easy.iloc[start, 33] = 3000
+    if start < 200:
         trials_easy.iloc[start, 0] = "Display 0.1 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_easy.iloc[start, 36] = 'noResponse'
-    else:
+    elif start >= 200 and start < 400:
         trials_easy.iloc[start, 0] = "Display 0.2 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_easy.iloc[start, 36] = 'noResponse'
+    elif start >= 400 and start < 600:
+        trials_easy.iloc[start, 0] = "Display 0.3 Anti".format(displays)
+    else:
+        trials_easy.iloc[start, 0] = "Display 0.4 Anti".format(displays)
     for i in range(len(trials_easy)):
         if i in range(start,end):
             trials_easy.iloc[i, 35] = j
@@ -221,11 +233,15 @@ splitted_previousStim_color = previousStim.split('_')[0]
 splitted_previousStim_form = previousStim.split('_')[1].split('.')[0]
 
 # Fill all rows for the first 100 and second 100 (for distributing reasons on the two circles in gorilla)
-for displays in range(1,3):
+for displays in range(1,5):
     if displays == 1:
-        rangeList = [0,400]
+        rangeList = [0,200]
+    elif displays == 2:
+        rangeList = [200,400]
+    elif displays == 3:
+        rangeList = [400,600]
     else:
-        rangeList = [400,800]
+        rangeList = [600,800]
 
     # Start loop trough rangelist
     for i in range(rangeList[0], rangeList[1]):
@@ -233,9 +249,13 @@ for displays in range(1,3):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+            elif displays == 2:
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+            elif displays == 3:
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
             else:
-                fieldNumberList = random.sample([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
             # Check that each stimulus position is at least five fields away from each other
             if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(
                     fieldNumberList[1] - fieldNumberList[0]) <= 26:
@@ -288,14 +308,18 @@ sessionSize = 40
 for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
-    if start < 400:
+    # Save correct answer for very first trial of a session
+    trials_normal.iloc[start, 36] = 'noResponse'
+    # Give 3 seconds preperation time for first trial
+    trials_normal.iloc[start, 33] = 3000
+    if start < 200:
         trials_normal.iloc[start, 0] = "Display 0.1 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_normal.iloc[start, 36] = 'noResponse'
-    else:
+    elif start >= 200 and start < 400:
         trials_normal.iloc[start, 0] = "Display 0.2 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_normal.iloc[start, 36] = 'noResponse'
+    elif start >= 400 and start < 600:
+        trials_normal.iloc[start, 0] = "Display 0.3 Anti".format(displays)
+    else:
+        trials_normal.iloc[start, 0] = "Display 0.4 Anti".format(displays)
     for i in range(len(trials_normal)):
         if i in range(start,end):
             trials_normal.iloc[i, 35] = j
@@ -355,11 +379,15 @@ trials_hard_preDF.loc[0,0] = previousStim
 splitted_previousStim_color = previousStim.split('_')[0]
 splitted_previousStim_form = previousStim.split('_')[1].split('.')[0]
 
-for displays in range(1,3):
+for displays in range(1,5):
     if displays == 1:
-        rangeList = [0,400]
+        rangeList = [0,200]
+    elif displays == 2:
+        rangeList = [200,400]
+    elif displays == 3:
+        rangeList = [400,600]
     else:
-        rangeList = [400,800]
+        rangeList = [600,800]
 
     # Start loop trough rangelist
     for i in range(rangeList[0], rangeList[1]):
@@ -367,9 +395,14 @@ for displays in range(1,3):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+            elif displays == 2:
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+            elif displays == 3:
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
             else:
-                fieldNumberList = random.sample([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+
             # Check that each stimulus position is at least five fields away from each other
             if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
                 fieldFound = True
@@ -421,14 +454,18 @@ sessionSize = 40
 for j in range(20):
     start = sessionSize * j
     end = sessionSize * (j+1)
-    if start < 400:
+    # Save correct answer for very first trial of a session
+    trials_hard.iloc[start, 36] = 'noResponse'
+    # Give 3 seconds preperation time for first trial
+    trials_hard.iloc[start, 33] = 3000
+    if start < 200:
         trials_hard.iloc[start, 0] = "Display 0.1 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_hard.iloc[start, 36] = 'noResponse'
-    else:
+    elif start >= 200 and start < 400:
         trials_hard.iloc[start, 0] = "Display 0.2 Anti".format(displays)
-        # Save correct answer for very first trial of a session
-        trials_hard.iloc[start, 36] = 'noResponse'
+    elif start >= 400 and start < 600:
+        trials_hard.iloc[start, 0] = "Display 0.3 Anti".format(displays)
+    else:
+        trials_hard.iloc[start, 0] = "Display 0.4 Anti".format(displays)
     for i in range(len(trials_hard)):
         if i in range(start,end):
             trials_hard.iloc[i, 35] = j

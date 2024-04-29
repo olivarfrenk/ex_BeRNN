@@ -50,7 +50,7 @@ formDict = {
 trials_easy = pd.DataFrame(index = range(800), columns = range(37))
 trials_easy_preDF = pd.DataFrame(index = range(800), columns = range(2))
 
-# Fill all rows for the first 400 and second 800 (for distributing reasons on the two circles in gorilla)
+# Fill all rows for the four displays
 for displays in range(1,5):
     if displays == 1:
         rangeList = [0,200]
@@ -76,18 +76,20 @@ for displays in range(1,5):
     for i in range(rangeList[0],rangeList[1]):
         fieldFound = False
         while fieldFound == False:
-            # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
+        # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -99,57 +101,91 @@ for displays in range(1,5):
         # Save correct answer to real df
         trials_easy.loc[i, 36] = trials_easy_preDF.loc[i, 0]
 
-        # randomly choose a stim from general stimulus pool
+        # randomly choose 2 stims from general stimulus pool
         stimFound = False
         while stimFound == False:
-            currentStim = df_stimList.sample()
-            splitted_currentStim_color = currentStim.iloc[0, 0].split('_')[0]
-            splitted_currentStim_form = currentStim.iloc[0, 0].split('_')[1].split('.')[0]
+            firstCurrentStim = df_stimList.sample()
+            splitted_firstCurrentStim_color = firstCurrentStim.iloc[0, 0].split('_')[0]
+            splitted_firstCurrentStim_form = firstCurrentStim.iloc[0, 0].split('_')[1].split('.')[0]
             if i == 0:
-                if splitted_currentStim_color != c1 and splitted_currentStim_color != c2 and splitted_currentStim_color != c3 and\
-                        splitted_currentStim_form != f1 and splitted_currentStim_form != f2 and splitted_currentStim_form != f3:
+                if splitted_firstCurrentStim_color != c1 and splitted_firstCurrentStim_color != c2 and splitted_firstCurrentStim_color != c3 and\
+                        splitted_firstCurrentStim_form != f1 and splitted_firstCurrentStim_form != f2 and splitted_firstCurrentStim_form != f3:
                     # add stim to trial df
-                    trials_easy.loc[i,fieldNumberList[1]] = currentStim.iloc[0,0]
-                    trials_easy_preDF.loc[i,1] = currentStim.iloc[0,0]
+                    trials_easy.loc[i,fieldNumberList[1]] = firstCurrentStim.iloc[0,0]
+                    trials_easy_preDF.loc[i,1] = firstCurrentStim.iloc[0,0]
                     # check for consecutive trial
                     if i != len(trials_easy_preDF)-1:
-                        trials_easy_preDF.loc[i+1,0] = currentStim.iloc[0,0]
+                        trials_easy_preDF.loc[i+1,0] = firstCurrentStim.iloc[0,0]
 
                         # colors to look for w.r.t. first Stim
-                        [c1, c2, c3] = colorDict[splitted_currentStim_color].split('-')
+                        [c1, c2, c3] = colorDict[splitted_firstCurrentStim_color].split('-')
                         # forms to look for w.r.t. first Stim
-                        [f1, f2, f3] = formDict[splitted_currentStim_form].split('-')
+                        [f1, f2, f3] = formDict[splitted_firstCurrentStim_form].split('-')
+                        print('firstStimFound')
                         stimFound = True
                     else:
                         # colors to look for w.r.t. first Stim
-                        [c1, c2, c3] = colorDict[splitted_currentStim_color].split('-')
+                        [c1, c2, c3] = colorDict[splitted_firstCurrentStim_color].split('-')
                         # forms to look for w.r.t. first Stim
-                        [f1, f2, f3] = formDict[splitted_currentStim_form].split('-')
+                        [f1, f2, f3] = formDict[splitted_firstCurrentStim_form].split('-')
+                        print('firstStimFound')
                         stimFound = True
                 else:
                     stimFound = False
             else:
-                if currentStim.iloc[0,0] != trials_easy_preDF.loc[i,0] and currentStim.iloc[0,0] != trials_easy_preDF.loc[i-1,0] and \
-                        splitted_currentStim_color != c1 and splitted_currentStim_color != c2 and splitted_currentStim_color != c3 and \
-                        splitted_currentStim_form != f1 and splitted_currentStim_form != f2 and splitted_currentStim_form != f3:
+                if firstCurrentStim.iloc[0,0] != trials_easy_preDF.loc[i,0] and firstCurrentStim.iloc[0,0] != trials_easy_preDF.loc[i-1,0] and \
+                        splitted_firstCurrentStim_color != c1 and splitted_firstCurrentStim_color != c2 and splitted_firstCurrentStim_color != c3 and \
+                        splitted_firstCurrentStim_form != f1 and splitted_firstCurrentStim_form != f2 and splitted_firstCurrentStim_form != f3:
                     # add stim to trial df
-                    trials_easy.loc[i,fieldNumberList[1]] = currentStim.iloc[0,0]
-                    trials_easy_preDF.loc[i,1] = currentStim.iloc[0,0]
+                    trials_easy.loc[i,fieldNumberList[1]] = firstCurrentStim.iloc[0,0]
+                    trials_easy_preDF.loc[i,1] = firstCurrentStim.iloc[0,0]
                     # check for consecutive trial
                     if i != len(trials_easy_preDF)-1:
-                        trials_easy_preDF.loc[i+1,0] = currentStim.iloc[0,0]
+                        trials_easy_preDF.loc[i+1,0] = firstCurrentStim.iloc[0,0]
 
                         # colors to look for w.r.t. first Stim
-                        [c1, c2, c3] = colorDict[splitted_currentStim_color].split('-')
+                        [c1, c2, c3] = colorDict[splitted_firstCurrentStim_color].split('-')
                         # forms to look for w.r.t. first Stim
-                        [f1, f2, f3] = formDict[splitted_currentStim_form].split('-')
+                        [f1, f2, f3] = formDict[splitted_firstCurrentStim_form].split('-')
+                        print('firstStimFound')
                         stimFound = True
                     else:
                         # colors to look for w.r.t. first Stim
-                        [c1, c2, c3] = colorDict[splitted_currentStim_color].split('-')
+                        [c1, c2, c3] = colorDict[splitted_firstCurrentStim_color].split('-')
                         # forms to look for w.r.t. first Stim
-                        [f1, f2, f3] = formDict[splitted_currentStim_form].split('-')
+                        [f1, f2, f3] = formDict[splitted_firstCurrentStim_form].split('-')
+                        print('firstStimFound')
                         stimFound = True
+                else:
+                    stimFound = False
+
+        # Second Stim --------------------------------------------------------------------------------------------------
+        stimFound = False
+        while stimFound == False:
+            secondCurrentStim = df_stimList.sample()
+            splitted_secondCurrentStim_color = secondCurrentStim.iloc[0, 0].split('_')[0]
+            splitted_secondCurrentStim_form = secondCurrentStim.iloc[0, 0].split('_')[1].split('.')[0]
+            if i == 0:
+                if splitted_secondCurrentStim_color != c1 and splitted_secondCurrentStim_color != c2 and splitted_secondCurrentStim_color != c3 and \
+                        splitted_secondCurrentStim_form != f1 and splitted_secondCurrentStim_form != f2 and splitted_secondCurrentStim_form != f3 and \
+                        splitted_secondCurrentStim_color != splitted_firstCurrentStim_color and splitted_secondCurrentStim_form != splitted_firstCurrentStim_form:
+                    # add stim to trial df
+                    trials_easy.loc[i, fieldNumberList[2]] = secondCurrentStim.iloc[0, 0]
+                    # trials_easy_preDF.loc[i, 2] = secondCurrentStim.iloc[0, 0]
+                    print('secondStimFound')
+                    stimFound = True
+                else:
+                    stimFound = False
+            else:
+                if secondCurrentStim.iloc[0, 0] != trials_easy_preDF.loc[i, 0] and secondCurrentStim.iloc[0, 0] != trials_easy_preDF.loc[i - 1, 0] and \
+                        splitted_secondCurrentStim_color != c1 and splitted_secondCurrentStim_color != c2 and splitted_secondCurrentStim_color != c3 and \
+                        splitted_secondCurrentStim_form != f1 and splitted_secondCurrentStim_form != f2 and splitted_secondCurrentStim_form != f3 and \
+                        splitted_secondCurrentStim_color != splitted_firstCurrentStim_color and splitted_secondCurrentStim_form != splitted_firstCurrentStim_form:
+                    # add stim to trial df
+                    trials_easy.loc[i, fieldNumberList[2]] = secondCurrentStim.iloc[0, 0]
+                    # trials_easy_preDF.loc[i, 1] = secondCurrentStim.iloc[0, 0]
+                    print('secondStimFound')
+                    stimFound = True
                 else:
                     stimFound = False
 
@@ -190,22 +226,22 @@ trials_easy.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 'F
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # Save df as spreadsheet
-trials_easy.to_excel('WM_trials_diffColor_diffForm.xlsx')
+trials_easy.to_excel('WM_trials_3stim_diffColor_diffForm.xlsx')
 
 
 # ======================================================================================================================
 # Create 800 trials for normal - Only similiar colors in consecutive trials
 # ======================================================================================================================
 trials_normal = pd.DataFrame(index = range(800), columns = range(37))
-trials_normal_preDF = pd.DataFrame(index = range(800), columns = range(2))
+trials_normal_preDF = pd.DataFrame(index = range(800), columns = range(3))
 
-def assignFunc_color(color1, color2, color3, form1, form2, form3):
+def assignFunc_color(color1, color2, color3, form1, form2, form3, fieldNumber, currentStim):
     if (splitted_currentStim_color == color1 and splitted_previousStim_form != splitted_currentStim_form or splitted_currentStim_color == color2 \
         or splitted_currentStim_color == color3) and splitted_currentStim_form != form1 and splitted_currentStim_form != form2 and\
             splitted_currentStim_form != form3:
         # append
-        trials_normal.loc[i, fieldNumberList[1]] = currentStim.iloc[0, 0]
-        trials_normal_preDF.loc[i, 1] = currentStim.iloc[0, 0]
+        trials_normal.loc[i, fieldNumberList[fieldNumber]] = currentStim.iloc[0, 0]
+        trials_normal_preDF.loc[i, fieldNumber] = currentStim.iloc[0, 0]
 
         if i != len(trials_normal) - 1:
             trials_normal_preDF.loc[i + 1, 0] = currentStim.iloc[0, 0]
@@ -241,17 +277,18 @@ for displays in range(1,5):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(
-                    fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -271,19 +308,36 @@ for displays in range(1,5):
         [f1, f2, f3] = previousStim_form_formDict.split('-')
 
         # while loop until the right stimuli w.r.t. to the previous stim was found
-        stimFound = False
-        while stimFound == False:
+        stimFound1 = False
+        stimFound2 = False
+        while stimFound1 == False or stimFound2 == False:
+
             # randomly choose a stim from general stimulus pool
-            currentStim = df_stimList.sample()
+            firstCurrentStim = df_stimList.sample()
             # split it up for comparison
-            string_currentStim = currentStim.iloc[0, 0]
+            string_currentStim = firstCurrentStim.iloc[0, 0]
             splitted_currentStim_color = string_currentStim.split('_')[0]
             splitted_currentStim_form = string_currentStim.split('_')[1].split('.')[0]
-
             if i == 0:
-                stimFound = assignFunc_color(c1, c2, c3, f1, f2, f3)
-            elif currentStim.iloc[0,0] != trials_normal_preDF.loc[i-1,0]:
-                stimFound = assignFunc_color(c1, c2, c3, f1, f2, f3)
+                stimFound1 = assignFunc_color(c1, c2, c3, f1, f2, f3, 1, firstCurrentStim)
+            elif firstCurrentStim.iloc[0,0] != trials_normal_preDF.loc[i-1,0] and \
+                    firstCurrentStim.iloc[0,0] != trials_normal_preDF.loc[i-1,2]:
+                stimFound1 = assignFunc_color(c1, c2, c3, f1, f2, f3, 1, firstCurrentStim)
+
+            # randomly choose a stim from general stimulus pool
+            secondCurrentStim = df_stimList.sample()
+            if firstCurrentStim.iloc[0,0] != secondCurrentStim.iloc[0,0]:
+                # split it up for comparison
+                string_currentStim = secondCurrentStim.iloc[0, 0]
+                splitted_currentStim_color = string_currentStim.split('_')[0]
+                splitted_currentStim_form = string_currentStim.split('_')[1].split('.')[0]
+                if i == 0:
+                    stimFound2 = assignFunc_color(c1, c2, c3, f1, f2, f3, 2, secondCurrentStim)
+                elif secondCurrentStim.iloc[0,0] != trials_normal_preDF.loc[i-1,0] and \
+                    secondCurrentStim.iloc[0,0] != trials_normal_preDF.loc[i-1,2]:
+                    stimFound2 = assignFunc_color(c1, c2, c3, f1, f2, f3, 2, secondCurrentStim)
+            else:
+                stimFound2 = False
 
         # the current stim is the previous for the next iteration in the for loop
         previousStim = trials_normal_preDF.loc[i, 1]
@@ -328,7 +382,7 @@ trials_normal.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # Save df as spreadsheet
-trials_normal.to_excel('WM_trials_simColor_diffForm.xlsx')
+trials_normal.to_excel('WM_trials_3stim_simColor_diffForm.xlsx')
 
 
 # ======================================================================================================================
@@ -336,17 +390,14 @@ trials_normal.to_excel('WM_trials_simColor_diffForm.xlsx')
 # ======================================================================================================================
 # Create empty trials hard df
 trials_hard = pd.DataFrame(index = range(800), columns = range(37))
-trials_hard_preDF = pd.DataFrame(index = range(800), columns = range(2))
+trials_hard_preDF = pd.DataFrame(index = range(800), columns = range(3))
 
 # Define functions
-def assignFunc_form(form1, form2, form3, iter):
+def assignFunc_form(form1, form2, form3, iter, fieldNumber, currentStim):
     if splitted_currentStim_form == form1 or splitted_currentStim_form == form2 or splitted_currentStim_form == form3:
         # add sampled stim to trial df
-        trials_hard.loc[iter, fieldNumberList[1]] = currentStim.iloc[0, 0]
-        trials_hard_preDF.loc[iter, 1] = currentStim.iloc[0, 0]
-        # check for consecutive trial
-        if iter != len(trials_hard) - 1:
-            trials_hard_preDF.loc[iter + 1, 0] = currentStim.iloc[0, 0]
+        trials_hard.loc[iter, fieldNumberList[fieldNumber]] = currentStim.iloc[0, 0]
+        trials_hard_preDF.loc[iter, fieldNumber] = currentStim.iloc[0, 0]
         # Interrupt while loop
         stimFound = True
         return stimFound
@@ -355,10 +406,10 @@ def assignFunc_form(form1, form2, form3, iter):
         stimFound = False
         return stimFound
 
-def assignFunc_color(color1, color2, color3, form1, form2, form3, i):
+def assignFunc_color(color1, color2, color3, form1, form2, form3, i, fieldNumber, currentStim):
     if splitted_currentStim_color == color1 or splitted_currentStim_color == color2 or splitted_currentStim_color == color3:
 
-        stimFound = assignFunc_form(form1, form2, form3, i)
+        stimFound = assignFunc_form(form1, form2, form3, i, fieldNumber, currentStim)
         return stimFound
 
     else:
@@ -387,17 +438,18 @@ for displays in range(1,5):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(
-                    fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -417,25 +469,48 @@ for displays in range(1,5):
         [f1, f2, f3] = outPrevious_formDict.split('-')
 
         # .. until right stim according to the previous stim conditions was found
-        stimFound = False
-        while stimFound == False:
+        stimFound1 = False
+        stimFound2 = False
+        while stimFound1 == False or stimFound2 == False:
+
             # randomly choose a stim from general stimulus pool
-            currentStim = df_stimList.sample()
+            firstCurrentStim = df_stimList.sample()
             # split it up for comparison
-            splitted_currentStim_color = currentStim.iloc[0,0].split('_')[0]
-            splitted_currentStim_form = currentStim.iloc[0,0].split('_')[1].split('.')[0]
-
+            string_currentStim = firstCurrentStim.iloc[0, 0]
+            splitted_currentStim_color = string_currentStim.split('_')[0]
+            splitted_currentStim_form = string_currentStim.split('_')[1].split('.')[0]
             # Apply function for finding right consecutive stimulus
-            if i == 0 and currentStim.iloc[0,0] != trials_hard_preDF.loc[i,0]:
-                stimFound = assignFunc_color(c1, c2, c3, f1, f2, f3, i)
-            elif currentStim.iloc[0,0] != trials_hard_preDF.loc[i,0]:
-                stimFound = assignFunc_color(c1, c2, c3, f1, f2, f3, i)
+            if i == 0 and firstCurrentStim.iloc[0,0] != trials_hard_preDF.loc[i,0]:
+                stimFound1 = assignFunc_color(c1, c2, c3, f1, f2, f3, i, 1, firstCurrentStim)
+            elif firstCurrentStim.iloc[0,0] != trials_hard_preDF.loc[i,0] and \
+                    firstCurrentStim.iloc[0,0] != trials_hard_preDF.loc[i-1,0] and \
+                    firstCurrentStim.iloc[0,0] != trials_hard_preDF.loc[i-1,2]:
+                stimFound1 = assignFunc_color(c1, c2, c3, f1, f2, f3, i, 1, firstCurrentStim)
 
-        # At the end allocate previous stim for next for loop
-        previousStim = trials_hard_preDF.iloc[i, 1]
-        # split it up for comparison
-        splitted_previousStim_color = previousStim.split('_')[0]
-        splitted_previousStim_form = previousStim.split('_')[1].split('.')[0]
+            # randomly choose a stim from general stimulus pool
+            secondCurrentStim = df_stimList.sample()
+            if firstCurrentStim.iloc[0, 0] != secondCurrentStim.iloc[0, 0]:
+                # split it up for comparison
+                string_currentStim = secondCurrentStim.iloc[0, 0]
+                splitted_currentStim_color = string_currentStim.split('_')[0]
+                splitted_currentStim_form = string_currentStim.split('_')[1].split('.')[0]
+                # Apply function for finding right consecutive stimulus
+                if i == 0 and secondCurrentStim.iloc[0, 0] != trials_hard_preDF.loc[i, 0] and\
+                        secondCurrentStim.iloc[0, 0] != firstCurrentStim.iloc[0, 0]:
+                    stimFound2 = assignFunc_color(c1, c2, c3, f1, f2, f3, i, 2, secondCurrentStim)
+                elif secondCurrentStim.iloc[0,0] != trials_hard_preDF.loc[i,0] and \
+                        secondCurrentStim.iloc[0, 0] != trials_hard_preDF.loc[i - 1, 0] and \
+                        secondCurrentStim.iloc[0, 0] != trials_hard_preDF.loc[i - 1, 2]:
+                    stimFound2 = assignFunc_color(c1, c2, c3, f1, f2, f3, i, 2, secondCurrentStim)
+
+        # check for consecutive trial
+        if i != len(trials_hard) - 1:
+            trials_hard_preDF.loc[i + 1, 0] = trials_hard_preDF.iloc[i, 1]
+            # At the end allocate previous stim for next for loop
+            previousStim = trials_hard_preDF.iloc[i, 1]
+            # split it up for comparison
+            splitted_previousStim_color = previousStim.split('_')[0]
+            splitted_previousStim_form = previousStim.split('_')[1].split('.')[0]
 
         # Add random fixation cross time
         fixation_cross_time = random.sample([100, 200, 300, 400, 500], 1)
@@ -474,6 +549,6 @@ trials_hard.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 'F
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # Save df as spreadsheet
-trials_hard.to_excel('WM_trials_simColor_simForm.xlsx')
+trials_hard.to_excel('WM_trials_3stim_simColor_simForm.xlsx')
 
 

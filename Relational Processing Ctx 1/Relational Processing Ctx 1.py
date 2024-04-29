@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import random
+from itertools import combinations
 
 # Direct to project file
 os.getcwd()
@@ -64,11 +65,15 @@ def color_nonSimiliarity(color1, color2, color3, form1, form2, form3, otherStim_
         return stimFound
 
 def create_RPCtx1_nonSimiliarity_trials(numTrials, numStim, otherStimNumber, dataFrame):
-    for displays in range(1,3):
+    for displays in range(1, 5):
         if displays == 1:
-            rangeList = [0, int(numTrials/2)]
+            rangeList = [0, int(numTrials / 4)]
+        elif displays == 2:
+            rangeList = [int(numTrials / 4), int(numTrials / 2)]
+        elif displays == 3:
+            rangeList = [int(numTrials / 2), int(numTrials / 2) + int(numTrials / 4)]
         else:
-            rangeList = [int(numTrials/2), numTrials]
+            rangeList = [int(numTrials / 2) + int(numTrials / 4), numTrials]
 
         for iter in range(rangeList[0], rangeList[1]):
             # Allocate list for the stimuli presented in one trial
@@ -110,28 +115,21 @@ def create_RPCtx1_nonSimiliarity_trials(numTrials, numStim, otherStimNumber, dat
 
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample(
-                    [[32, 6, 12, 18, 24], [2, 8, 14, 20, 26], [4, 10, 16, 22, 28], [6, 12, 18, 24, 30],
-                     [8, 14, 20, 26, 32], [10, 16, 22, 28, 2], \
-                     [12, 18, 24, 30, 4], [14, 20, 26, 32, 6], [16, 22, 28, 2, 8], [18, 24, 30, 4, 10],
-                     [20, 26, 32, 6, 12], [22, 28, 2, 8, 14], \
-                     [24, 30, 4, 10, 16], [26, 32, 6, 12, 18], [28, 2, 8, 14, 20], [30, 4, 10, 16, 22]], 1)[0]
-                # fieldList = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+                fieldNumberList = combinations([2, 6, 10, 14, 18, 22, 26, 30], 5)
+            elif displays == 2:
+                fieldNumberList = combinations([1, 5, 9, 13, 17, 21, 25, 29], 5)
+            elif displays == 3:
+                fieldNumberList = combinations([4, 8, 12, 16, 20, 24, 28, 32], 5)
             else:
-                fieldNumberList = random.sample(
-                    [[1, 7, 13, 19, 25], [3, 9, 15, 21, 27], [5, 11, 17, 23, 29], [7, 13, 19, 25, 31],
-                     [9, 15, 21, 27, 1], [11, 17, 23, 29, 3], \
-                     [13, 19, 25, 31, 5], [15, 21, 27, 1, 7], [17, 23, 29, 3, 9], [19, 25, 31, 5, 11],
-                     [21, 27, 1, 7, 13], [23, 29, 3, 9, 15], \
-                     [25, 31, 5, 11, 17], [27, 1, 7, 13, 19], [29, 3, 9, 15, 21], [31, 5, 11, 17, 23]], 1)[0]
-                # fieldList = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+                fieldNumberList = combinations([3, 7, 11, 15, 19, 23, 27, 31], 5)
 
             # Assign empty fields on current trial
             dataFrame.loc[iter] = '000_000.png'
             # Assign Display variable
             dataFrame.iloc[iter,0] = "Display {} RP Ctx1".format(displays)
             # Assign every stim to its field according to the sampled random numbers in fieldNumberList
-            randomFieldNumbers = random.sample(fieldNumberList, numStim)
+            randomList = random.choice(list(fieldNumberList))
+            randomFieldNumbers = random.sample(randomList, numStim)
             for i in range(len(stimList)):
                 dataFrame.iloc[iter, randomFieldNumbers[i]] = stimList[i].iloc[0, 0]
             # Save correct answer to real df
@@ -209,11 +207,15 @@ def color_similiarity(color1, color2, color3, form2, form3, otherStim_color, oth
         return stimFound
 
 def create_RPCtx1_similiarity_trials(numTrials, numStim, otherStimNumber, dataFrame):
-    for displays in range(1,3):
+    for displays in range(1, 5):
         if displays == 1:
-            rangeList = [0, int(numTrials/2)]
+            rangeList = [0, int(numTrials / 4)]
+        elif displays == 2:
+            rangeList = [int(numTrials / 4), int(numTrials / 2)]
+        elif displays == 3:
+            rangeList = [int(numTrials / 2), int(numTrials / 2) + int(numTrials / 4)]
         else:
-            rangeList = [int(numTrials/2), numTrials]
+            rangeList = [int(numTrials / 2) + int(numTrials / 4), numTrials]
 
         for iter in range(rangeList[0], rangeList[1]):
             # Allocate list for the stimuli presented in one trial
@@ -256,28 +258,21 @@ def create_RPCtx1_similiarity_trials(numTrials, numStim, otherStimNumber, dataFr
 
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample(
-                    [[32, 6, 12, 18, 24], [2, 8, 14, 20, 26], [4, 10, 16, 22, 28], [6, 12, 18, 24, 30],
-                     [8, 14, 20, 26, 32], [10, 16, 22, 28, 2], \
-                     [12, 18, 24, 30, 4], [14, 20, 26, 32, 6], [16, 22, 28, 2, 8], [18, 24, 30, 4, 10],
-                     [20, 26, 32, 6, 12], [22, 28, 2, 8, 14], \
-                     [24, 30, 4, 10, 16], [26, 32, 6, 12, 18], [28, 2, 8, 14, 20], [30, 4, 10, 16, 22]], 1)[0]
-                # fieldList = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+                fieldNumberList = combinations([2, 6, 10, 14, 18, 22, 26, 30], 5)
+            elif displays == 2:
+                fieldNumberList = combinations([1, 5, 9, 13, 17, 21, 25, 29], 5)
+            elif displays == 3:
+                fieldNumberList = combinations([4, 8, 12, 16, 20, 24, 28, 32], 5)
             else:
-                fieldNumberList = random.sample(
-                    [[1, 7, 13, 19, 25], [3, 9, 15, 21, 27], [5, 11, 17, 23, 29], [7, 13, 19, 25, 31],
-                     [9, 15, 21, 27, 1], [11, 17, 23, 29, 3], \
-                     [13, 19, 25, 31, 5], [15, 21, 27, 1, 7], [17, 23, 29, 3, 9], [19, 25, 31, 5, 11],
-                     [21, 27, 1, 7, 13], [23, 29, 3, 9, 15], \
-                     [25, 31, 5, 11, 17], [27, 1, 7, 13, 19], [29, 3, 9, 15, 21], [31, 5, 11, 17, 23]], 1)[0]
-                # fieldList = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+                fieldNumberList = combinations([3, 7, 11, 15, 19, 23, 27, 31], 5)
 
             # Assign empty fields on current trial
             dataFrame.loc[iter] = '000_000.png'
             # Assign Display variable
             dataFrame.iloc[iter,0] = "Display {} RP Ctx1".format(displays)
             # Assign every stim to its field according to the sampled random numbers in fieldNumberList
-            randomFieldNumbers = random.sample(fieldNumberList, numStim)
+            randomList = random.choice(list(fieldNumberList))
+            randomFieldNumbers = random.sample(randomList, numStim)
             for i in range(len(stimList)):
                 dataFrame.iloc[iter, randomFieldNumbers[i]] = stimList[i].iloc[0, 0]
             # Save correct answer to real df

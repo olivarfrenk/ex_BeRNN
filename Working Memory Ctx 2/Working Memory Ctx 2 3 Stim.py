@@ -76,7 +76,7 @@ splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0
 [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color].split('-')
 [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form].split('-')
 # Write firstStim into df
-trials_easy.loc[0,16] = firstStim.iloc[0,0]
+trials_easy.loc[0,6] = firstStim.iloc[0,0]
 
 # Get second non-similiar stim
 stimFound, secondStim = nonSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
@@ -89,9 +89,22 @@ splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')
 [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color].split('-')
 [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form].split('-')
 # Write secondStim into df
-trials_easy.loc[0,32] = secondStim.iloc[0,0]
+trials_easy.loc[0,14] = secondStim.iloc[0,0]
 
-# Fill all rows for the first 400 and second 800 (for distributing reasons on the two circles in gorilla)
+# Get third non-similiar stim
+stimFound, thirdStim = nonSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
+# Split information
+splitted_thirdStim_color = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+# colors and forms to look for w.r.t. first Stim
+[third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color].split('-')
+[third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form].split('-')
+# Write thirdStim into df
+trials_easy.loc[0,26] = thirdStim.iloc[0,0]
+
+# Fill all rows for the first 400 and second 400 (for distributing reasons on the two circles in gorilla)
 for displays in range(1,5):
     if displays == 1:
         rangeList = [0,200]
@@ -108,16 +121,18 @@ for displays in range(1,5):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -130,31 +145,41 @@ for displays in range(1,5):
         if ratioMatches[0] == 0:
             diffFound = False
             while diffFound == False:
-                # Create two new stims
+                # Create three new stims
                 firstStim = df_stimList.sample()
                 firstStim_currentTrial_form = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
 
                 secondStim = df_stimList.sample()
                 secondStim_currentTrial_form = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                thirdStim = df_stimList.sample()
+                thirdStim_currentTrial_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                 # Save correct answer
                 trials_easy.iloc[i, 36] = 'Match'
 
-                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory or \
-                        firstStim_currentTrial_form == splitted_secondStim_form_memory and secondStim_currentTrial_form == splitted_firstStim_form_memory:
+                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory \
+                        and thirdStim_currentTrial_form == splitted_thirdStim_form_memory:
                     # Save the new found trial in memory for consecutive trial
                     splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
                     splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
                     splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
                     splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+                    splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                    splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                     # colors and forms to look for w.r.t. first Stim
                     [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
                     [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
                     # colors and forms to look for w.r.t. second Stim
                     [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
                     [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+                    # colors and forms to look for w.r.t. third Stim
+                    [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+                    [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
                     # Write stims into df
                     trials_easy.loc[i,fieldNumberList[0]] = firstStim.iloc[0, 0]
                     trials_easy.loc[i,fieldNumberList[1]] = secondStim.iloc[0, 0]
+                    trials_easy.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
+                    print('Match found')
                     diffFound = True
                 else:
                     diffFound = False
@@ -173,7 +198,13 @@ for displays in range(1,5):
                 splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
                 splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
 
-                if splitted_firstStim_form_memory != second_f1 and splitted_secondStim_form_memory != first_f1:
+                stimFound, thirdStim = nonSimiliarity(third_c1, third_c2, third_c3, third_f1, third_f2, third_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                if splitted_firstStim_form_memory != second_f1 or splitted_secondStim_form_memory != first_f1:
+                    print('Mismatch found')
                     global_stimFound = True
 
             # colors and forms to look for w.r.t. first Stim
@@ -182,11 +213,15 @@ for displays in range(1,5):
             # colors and forms to look for w.r.t. second Stim
             [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
             [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+            # colors and forms to look for w.r.t. second Stim
+            [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+            [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
             # Save correct answer
             trials_easy.iloc[i, 36] = 'Mismatch'
             # Write stims into df
             trials_easy.loc[i, fieldNumberList[0]] = firstStim.iloc[0, 0]
             trials_easy.loc[i, fieldNumberList[1]] = secondStim.iloc[0, 0]
+            trials_easy.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
 
         # Add random fixation cross time
         fixation_cross_time = random.sample([100, 200, 300, 400, 500], 1)
@@ -225,7 +260,7 @@ trials_easy.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 'F
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # # Save df as spreadsheet
-trials_easy.to_excel('WM_Ctx2_trials_diffColor_diffForm.xlsx')
+trials_easy.to_excel('WM_Ctx2_3stim_trials_diffColor_diffForm.xlsx')
 
 
 # ======================================================================================================================
@@ -264,7 +299,7 @@ splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0
 [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color].split('-')
 [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form].split('-')
 # Write firstStim into df
-trials_normal.loc[0,16] = firstStim.iloc[0,0]
+trials_normal.loc[0,6] = firstStim.iloc[0,0]
 
 # Get second non-similiar stim
 stimFound, secondStim = formSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
@@ -277,9 +312,22 @@ splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')
 [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color].split('-')
 [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form].split('-')
 # Write secondStim into df
-trials_normal.loc[0,32] = secondStim.iloc[0,0]
+trials_normal.loc[0,14] = secondStim.iloc[0,0]
 
-# Fill all rows for the first 400 and second 800 (for distributing reasons on the two circles in gorilla)
+# Get third non-similiar stim
+stimFound, thirdStim = formSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
+# Split information
+splitted_thirdStim_color = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+# colors and forms to look for w.r.t. first Stim
+[third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color].split('-')
+[third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form].split('-')
+# Write thirdStim into df
+trials_normal.loc[0,26] = thirdStim.iloc[0,0]
+
+# Fill all rows for the first 400 and second 400 (for distributing reasons on the two circles in gorilla)
 for displays in range(1,5):
     if displays == 1:
         rangeList = [0,200]
@@ -296,16 +344,18 @@ for displays in range(1,5):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -318,57 +368,83 @@ for displays in range(1,5):
         if ratioMatches[0] == 0:
             diffFound = False
             while diffFound == False:
-                # Create two new stims
+                # Create three new stims
                 firstStim = df_stimList.sample()
                 firstStim_currentTrial_form = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
 
                 secondStim = df_stimList.sample()
                 secondStim_currentTrial_form = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                thirdStim = df_stimList.sample()
+                thirdStim_currentTrial_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                 # Save correct answer
                 trials_normal.iloc[i, 36] = 'Match'
 
-                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory or \
-                        firstStim_currentTrial_form == splitted_secondStim_form_memory and secondStim_currentTrial_form == splitted_firstStim_form_memory:
+                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory \
+                        and thirdStim_currentTrial_form == splitted_thirdStim_form_memory:
                     # Save the new found trial in memory for consecutive trial
                     splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
                     splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
                     splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
                     splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+                    splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                    splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                     # colors and forms to look for w.r.t. first Stim
                     [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
                     [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
                     # colors and forms to look for w.r.t. second Stim
                     [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
                     [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+                    # colors and forms to look for w.r.t. third Stim
+                    [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+                    [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
                     # Write stims into df
                     trials_normal.loc[i,fieldNumberList[0]] = firstStim.iloc[0, 0]
                     trials_normal.loc[i,fieldNumberList[1]] = secondStim.iloc[0, 0]
+                    trials_normal.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
+                    print('Match found')
                     diffFound = True
                 else:
                     diffFound = False
 
         else:
-            # Create two new stims
-            stimFound, firstStim = formSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
-            # Save the new found trial in memory for consecutive trial
-            splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
-            splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
+            global_stimFound = False
+            while global_stimFound == False:
+                # Create two new stims
+                stimFound, firstStim = formSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
+                splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                stimFound, secondStim = formSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
+                splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                stimFound, thirdStim = formSimiliarity(third_c1, third_c2, third_c3, third_f1, third_f2, third_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                if splitted_firstStim_form_memory != second_f1 or splitted_secondStim_form_memory != first_f1:
+                    print('Mismatch found')
+                    global_stimFound = True
+
             # colors and forms to look for w.r.t. first Stim
             [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
             [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
-
-            stimFound, secondStim = formSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
-            # Save the new found trial in memory for consecutive trial
-            splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
-            splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
             # colors and forms to look for w.r.t. second Stim
             [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
             [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+            # colors and forms to look for w.r.t. second Stim
+            [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+            [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
             # Save correct answer
             trials_normal.iloc[i, 36] = 'Mismatch'
             # Write stims into df
             trials_normal.loc[i, fieldNumberList[0]] = firstStim.iloc[0, 0]
             trials_normal.loc[i, fieldNumberList[1]] = secondStim.iloc[0, 0]
+            trials_normal.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
 
         # Add random fixation cross time
         fixation_cross_time = random.sample([100, 200, 300, 400, 500], 1)
@@ -407,7 +483,8 @@ trials_normal.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # # Save df as spreadsheet
-trials_normal.to_excel('WM_Ctx2_trials_diffColor_simForm.xlsx')
+trials_normal.to_excel('WM_Ctx2_3stim_trials_simColor_diffForm.xlsx')
+
 
 
 # ======================================================================================================================
@@ -446,7 +523,7 @@ splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0
 [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color].split('-')
 [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form].split('-')
 # Write firstStim into df
-trials_hard.loc[0,16] = firstStim.iloc[0,0]
+trials_hard.loc[0,6] = firstStim.iloc[0,0]
 
 # Get second non-similiar stim
 stimFound, secondStim = colorAndFormSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
@@ -459,9 +536,22 @@ splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')
 [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color].split('-')
 [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form].split('-')
 # Write secondStim into df
-trials_hard.loc[0,32] = secondStim.iloc[0,0]
+trials_hard.loc[0,14] = secondStim.iloc[0,0]
 
-# Fill all rows for the first 400 and second 800 (for distributing reasons on the two circles in gorilla)
+# Get third non-similiar stim
+stimFound, thirdStim = colorAndFormSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
+# Split information
+splitted_thirdStim_color = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+splitted_thirdStim_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
+# colors and forms to look for w.r.t. first Stim
+[third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color].split('-')
+[third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form].split('-')
+# Write thirdStim into df
+trials_hard.loc[0,26] = thirdStim.iloc[0,0]
+
+# Fill all rows for the first 400 and second 400 (for distributing reasons on the two circles in gorilla)
 for displays in range(1,5):
     if displays == 1:
         rangeList = [0,200]
@@ -478,16 +568,18 @@ for displays in range(1,5):
         while fieldFound == False:
             # Sample a random number for every stimulus per trial for assigning them to their field in experiment space
             if displays == 1:
-                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 2)
+                fieldNumberList = random.sample([2, 6, 10, 14, 18, 22, 26, 30], 3)
             elif displays == 2:
-                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 2)
+                fieldNumberList = random.sample([1, 5, 9, 13, 17, 21, 25, 29], 3)
             elif displays == 3:
-                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 2)
+                fieldNumberList = random.sample([4, 8, 12, 16, 20, 24, 28, 32], 3)
             else:
-                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 2)
+                fieldNumberList = random.sample([3, 7, 11, 15, 19, 23, 27, 31], 3)
 
             # Check that each stimulus position is at least five fields away from each other
-            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26:
+            if abs(fieldNumberList[0] - fieldNumberList[1]) >= 6 and abs(fieldNumberList[0] - fieldNumberList[2]) >= 6 and \
+                    abs(fieldNumberList[1] - fieldNumberList[2]) >= 6 and abs(fieldNumberList[1] - fieldNumberList[0]) <= 26 and \
+                    abs(fieldNumberList[2] - fieldNumberList[0]) <= 26 and abs(fieldNumberList[2] - fieldNumberList[1]) <= 26:
                 fieldFound = True
 
         # Name all empty fields 000_000.png
@@ -500,68 +592,83 @@ for displays in range(1,5):
         if ratioMatches[0] == 0:
             diffFound = False
             while diffFound == False:
-                # Create two new stims
+                # Create three new stims
                 firstStim = df_stimList.sample()
                 firstStim_currentTrial_form = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
 
                 secondStim = df_stimList.sample()
                 secondStim_currentTrial_form = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+
+                thirdStim = df_stimList.sample()
+                thirdStim_currentTrial_form = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                 # Save correct answer
                 trials_hard.iloc[i, 36] = 'Match'
 
-                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory or \
-                        firstStim_currentTrial_form == splitted_secondStim_form_memory and secondStim_currentTrial_form == splitted_firstStim_form_memory:
+                if firstStim_currentTrial_form == splitted_firstStim_form_memory and secondStim_currentTrial_form == splitted_secondStim_form_memory \
+                        and thirdStim_currentTrial_form == splitted_thirdStim_form_memory:
                     # Save the new found trial in memory for consecutive trial
                     splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
                     splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
                     splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
                     splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+                    splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                    splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
                     # colors and forms to look for w.r.t. first Stim
                     [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
                     [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
                     # colors and forms to look for w.r.t. second Stim
                     [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
                     [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+                    # colors and forms to look for w.r.t. third Stim
+                    [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+                    [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
                     # Write stims into df
                     trials_hard.loc[i,fieldNumberList[0]] = firstStim.iloc[0, 0]
                     trials_hard.loc[i,fieldNumberList[1]] = secondStim.iloc[0, 0]
+                    trials_hard.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
+                    print('Match found')
                     diffFound = True
                 else:
                     diffFound = False
 
         else:
-            diffFound = False
-            while diffFound == False:
+            global_stimFound = False
+            while global_stimFound == False:
                 # Create two new stims
                 stimFound, firstStim = colorAndFormSimiliarity(first_c1, first_c2, first_c3, first_f1, first_f2, first_f3)
-                firstStim_currentTrial_form = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
+                # Save the new found trial in memory for consecutive trial
+                splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
+                splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
 
                 stimFound, secondStim = colorAndFormSimiliarity(second_c1, second_c2, second_c3, second_f1, second_f2, second_f3)
-                secondStim_currentTrial_form = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
+                # Save the new found trial in memory for consecutive trial
+                splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
+                splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
 
-                if firstStim_currentTrial_form != splitted_firstStim_form_memory and firstStim_currentTrial_form != splitted_secondStim_form_memory or\
-                    secondStim_currentTrial_form != splitted_firstStim_form_memory and secondStim_currentTrial_form != splitted_secondStim_form_memory:
+                stimFound, thirdStim = colorAndFormSimiliarity(third_c1, third_c2, third_c3, third_f1, third_f2, third_f3)
+                # Save the new found trial in memory for consecutive trial
+                splitted_thirdStim_color_memory = thirdStim.iloc[0, 0].split('_')[0]
+                splitted_thirdStim_form_memory = thirdStim.iloc[0, 0].split('_')[1].split('.')[0]
 
-                    # Save the new found trial in memory for consecutive trial
-                    splitted_firstStim_color_memory = firstStim.iloc[0, 0].split('_')[0]
-                    splitted_firstStim_form_memory = firstStim.iloc[0, 0].split('_')[1].split('.')[0]
-                    # colors and forms to look for w.r.t. first Stim
-                    [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
-                    [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
+                if splitted_firstStim_form_memory != second_f1 or splitted_secondStim_form_memory != first_f1:
+                    print('Mismatch found')
+                    global_stimFound = True
 
-                    # Save the new found trial in memory for consecutive trial
-                    splitted_secondStim_color_memory = secondStim.iloc[0, 0].split('_')[0]
-                    splitted_secondStim_form_memory = secondStim.iloc[0, 0].split('_')[1].split('.')[0]
-                    # colors and forms to look for w.r.t. second Stim
-                    [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
-                    [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
-                    # Save correct answer
-                    trials_hard.iloc[i, 36] = 'Mismatch'
-                    # Write stims into df
-                    trials_hard.loc[i, fieldNumberList[0]] = firstStim.iloc[0, 0]
-                    trials_hard.loc[i, fieldNumberList[1]] = secondStim.iloc[0, 0]
-                    # Stop loop
-                    diffFound = True
+            # colors and forms to look for w.r.t. first Stim
+            [first_c1, first_c2, first_c3] = colorDict[splitted_firstStim_color_memory].split('-')
+            [first_f1, first_f2, first_f3] = formDict[splitted_firstStim_form_memory].split('-')
+            # colors and forms to look for w.r.t. second Stim
+            [second_c1, second_c2, second_c3] = colorDict[splitted_secondStim_color_memory].split('-')
+            [second_f1, second_f2, second_f3] = formDict[splitted_secondStim_form_memory].split('-')
+            # colors and forms to look for w.r.t. second Stim
+            [third_c1, third_c2, third_c3] = colorDict[splitted_thirdStim_color_memory].split('-')
+            [third_f1, third_f2, third_f3] = formDict[splitted_thirdStim_form_memory].split('-')
+            # Save correct answer
+            trials_hard.iloc[i, 36] = 'Mismatch'
+            # Write stims into df
+            trials_hard.loc[i, fieldNumberList[0]] = firstStim.iloc[0, 0]
+            trials_hard.loc[i, fieldNumberList[1]] = secondStim.iloc[0, 0]
+            trials_hard.loc[i, fieldNumberList[2]] = thirdStim.iloc[0, 0]
 
         # Add random fixation cross time
         fixation_cross_time = random.sample([100, 200, 300, 400, 500], 1)
@@ -600,7 +707,6 @@ trials_hard.columns = ['display', 'Field 1', 'Field 2', 'Field 3', 'Field 4', 'F
                      'Field 30', 'Field 31', 'Field 32', 'FixationCrossTime', 'AfterResponseTime',
                      'BlockRandomisation', 'CorrectAnswer']
 # # Save df as spreadsheet
-trials_hard.to_excel('WM_Ctx2_trials_simColor_simForm.xlsx')
-
+trials_hard.to_excel('WM_Ctx2_3stim_trials_simColor_simForm.xlsx')
 
 
